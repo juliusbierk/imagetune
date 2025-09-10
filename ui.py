@@ -2,9 +2,18 @@ import numpy as np
 from skimage import data, color, exposure, filters
 import fastplotlib as fpl
 from PySide6 import QtWidgets, QtCore
+from functools import partial
 
 
-def make_ui(im):
+def _from_slider(val, min, max):
+    return min + val / 100.0 * (max - min)
+
+
+def _to_slider(val, min, max):
+    return int(100 * (val - min) / (max - min))
+
+
+def make_ui(pipeline, im, tunes):
     app = QtWidgets.QApplication([])
 
     fig = fpl.Figure(shape=(1, 2))
@@ -20,47 +29,35 @@ def make_ui(im):
     lay = QtWidgets.QVBoxLayout(w)
     lay.addWidget(canvas)
 
-    # --- Threshold slider with label ---
-    thresh_layout = QtWidgets.QHBoxLayout()
-    thresh_label = QtWidgets.QLabel("Threshold: 0.50")
-    slider_thresh = QtWidgets.QSlider(QtCore.Qt.Orientation.Horizontal)
-    slider_thresh.setRange(0, 100)
-    slider_thresh.setValue(50)
-    thresh_layout.addWidget(thresh_label)
-    thresh_layout.addWidget(slider_thresh)
-    lay.addLayout(thresh_layout)
-
-    # --- Blur slider with label ---
-    blur_layout = QtWidgets.QHBoxLayout()
-    blur_label = QtWidgets.QLabel("Blur (σ): 0.0")
-    slider_blur = QtWidgets.QSlider(QtCore.Qt.Orientation.Horizontal)
-    slider_blur.setRange(0, 20)   # corresponds to sigma=0..2.0
-    slider_blur.setValue(0)
-    blur_layout.addWidget(blur_label)
-    blur_layout.addWidget(slider_blur)
-    lay.addLayout(blur_layout)
-
-    state = {
-        "threshold": 0.5,
-        "sigma": 0.0,
-    }
-
     def update_image():
-        blurred = filters.gaussian(im, sigma=state["sigma"]) if state["sigma"] > 0 else im
-        bin_artist.data = (blurred > state["threshold"]).astype(np.float32)
+        r_im = pipeline(im)
+        bin_artist.data = r_im.astype(np.float32)
 
-    def update_thresh(v):
-        state["threshold"] = v / 100.0
-        thresh_label.setText(f"Threshold: {state['threshold']:.2f}")
+    def update(v, tune, label):
+        tune['value'] = _from_slider(v, tune['min'], tune['max'])
+        label.setText(f"{tune['name']} : {tune['value']:.3f}")
         update_image()
 
-    def update_blur(v):
-        state["sigma"] = v / 10.0   # slider 0..20 → sigma 0..2.0
-        blur_label.setText(f"Blur (σ): {state['sigma']:.1f}")
-        update_image()
+    for tune_name, tune in tunes.items():
+        layout = QtWidgets.QHBoxLayout()
+        label = QtWidgets.QLabel(f"")
+        slider = QtWidgets.QSlider(QtCore.Qt.Orientation.Horizontal)
 
-    slider_thresh.valueChanged.connect(update_thresh)
-    slider_blur.valueChanged.connect(update_blur)
+        if tune['min'] is None:
+            tune['min'] = 0.1 * tune['value']
+
+        if tune['max'] is None:
+            tune['max'] = 10 * tune
+
+        slider.setRange(0, 100)
+        slider.setValue(_to_slider(tune['value'], tune['min'], tune['max']))
+        layout.addWidget(label)
+        layout.addWidget(slider)
+        lay.addLayout(layout)
+
+        slider.valueChanged.connect(partial(update, tune=tune, label=label))
+        update(_to_slider(tune['value'], tune['min'], tune['max']), tune, label)
+
 
     w.resize(1200, 600)
     w.show()

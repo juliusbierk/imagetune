@@ -2,6 +2,10 @@ from imagetuner import tune, tuneui
 from skimage import data
 from skimage.filters import gaussian
 
+# TODO:
+#  update API to allow multiple parameters per function
+#  update UI to show intermediate results of the last changed parameter
+#  keep order of Tunes and make sliders in that order
 
 @tune(min=0, max=1.0)
 def threshold(im, t1):

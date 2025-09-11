@@ -9,7 +9,7 @@ from skimage.filters import gaussian
 def threshold(im, t1):
     return im > t1
 
-@tune(min=0, max=2.0)
+@tune
 def gamma(im, gamma):
     return im**gamma
 

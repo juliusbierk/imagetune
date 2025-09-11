@@ -59,7 +59,7 @@ def make_ui(pipeline, im, tunes):
             tune['min'] = 0.1 * tune['value']
 
         if tune['max'] is None:
-            tune['max'] = 10 * tune
+            tune['max'] = 10 * tune['value']
 
         slider.setRange(0, 100)
         slider.setValue(_to_slider(tune['value'], tune['min'], tune['max']))
@@ -68,7 +68,9 @@ def make_ui(pipeline, im, tunes):
         lay.addLayout(layout)
 
         slider.valueChanged.connect(partial(update, tune=tune, label=label))
-        update(_to_slider(tune['value'], tune['min'], tune['max']), tune, label)
+        v = _to_slider(tune['value'], tune['min'], tune['max'])
+        slider.sliderPressed.connect(partial(update, v=v, tune=tune, label=label))
+        update(v, tune, label)
 
 
     w.resize(1200, 600)

@@ -39,8 +39,10 @@ def threshold(im, thres_val):
 
 
 def preprocessing(im):
+-    bg = gaussian(im, 10)
 +    bg = tune(gaussian)(im, 10)
     fg = im - bg
+-    segmented = threshold(fg, 0.1)
 +    segmented = tune(threshold)(fg, 0.1)
     return segmented
 

@@ -15,9 +15,9 @@ def threshold(im, thres_val):
 
 
 def preprocessing(im):
-    bg = tune(gaussian)(im, 10)
+    bg = gaussian(im, 10)
     fg = im - bg
-    segmented = tune(threshold)(fg, 0.1)
+    segmented = threshold(fg, 0.1)
     return segmented
 
 
@@ -53,3 +53,10 @@ This launches a small window in which the parameters are tunable live:
 
 ![ImageTune](.github/imgs/example1.png)
 
+You can also decorate your functions instead
+
+```diff
++@tune
+def threshold(im, thres_val):
+    return im > thres_val
+```

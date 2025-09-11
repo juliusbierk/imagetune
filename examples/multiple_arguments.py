@@ -19,7 +19,6 @@ def preprocess(im):
     return im
 
 
-
 if __name__ == '__main__':
     im = data.astronaut()[:, :, 0] / 255.
     tuneui(preprocess, im)

@@ -26,7 +26,7 @@ def _build_ui_widget(pipeline, im, tunes):
     if intermediate_plot:
         ax_orig, ax_intermediate, ax_final = fig[0, 0], fig[0, 1], fig[0, 2]
         ax_intermediate.title = "intermediate"
-        bin_intermediate = ax_intermediate.add_image(im)
+        bin_intermediate = [ax_intermediate.add_image(im)]
     else:
         ax_orig, ax_intermediate, ax_final = fig[0, 0], None, fig[0, 1]
 
@@ -35,7 +35,7 @@ def _build_ui_widget(pipeline, im, tunes):
             ax.axes.visible = False
 
     bin_orig = ax_orig.add_image(im)
-    bin_final = ax_final.add_image(im)
+    bin_final = [ax_final.add_image(im)]
     ax_orig.title = "original"
     ax_final.title = "final"
     canvas = fig.show()
@@ -45,9 +45,19 @@ def _build_ui_widget(pipeline, im, tunes):
 
     def update_image(tune):
         r_im = pipeline(im)
-        bin_final.data = img_as_float(r_im)
+        try:
+            bin_final[0].data = img_as_float(r_im)
+        except ValueError:
+            ax_final.clear()
+            bin_final[0] = ax_final.add_image(img_as_float(r_im))
+
         if intermediate_plot:
-            bin_intermediate.data = img_as_float(tune['result'])
+            try:
+                bin_intermediate[0].data = img_as_float(tune['result'])
+            except ValueError:
+                ax_intermediate.clear()
+                bin_intermediate[0] = ax_intermediate.add_image(img_as_float(tune['result']))
+
             ax_intermediate.title = f"{tune['index'] + 1} : {tune['written_name']}"
 
     def update(v, tune, label, arg_index):

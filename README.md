@@ -31,7 +31,7 @@ In order to tune these live, simply wrap those functions in `tune`:
 ```python
 from skimage.filters import gaussian
 from skimage import data
-**from imagetune import tune, tuneui**
+<b>from imagetune import tune, tuneui</b>
 
 
 def threshold(im, thres_val):
@@ -39,14 +39,14 @@ def threshold(im, thres_val):
 
 
 def preprocessing(im):
-    bg = **tune**(gaussian)(im, 10)
+    bg = <b>tune</b>(gaussian)(im, 10)
     fg = im - bg
-    segmented = **tune**(threshold)(fg, 0.1)
+    segmented = <b>tune</b>(threshold)(fg, 0.1)
     return segmented
 
 
 im = data.coins()
-**tuneui(preprocessing, im)**
+<b>tuneui(preprocessing, im)</b>
 ```
 
 This launches a small window in which the parameters are tunable live:

@@ -43,15 +43,14 @@ def make_ui(pipeline, im, tunes):
         bin_final.data = r_im.astype(np.float32)
         if intermediate_plot:
             bin_intermediate.data = tune['result'].astype(np.float32)
-            ax_intermediate.title = f'{tune['index'] + 1} : {tune['name']}'
+            ax_intermediate.title = f'{tune['index'] + 1} : {tune['written_name']}'
 
     def update(v, tune, label):
         tune['value'] = _from_slider(v, tune['min'], tune['max'])
-        label.setText(f"{tune['index'] + 1} : {tune['name']} : {tune['value']:.3f}")
+        label.setText(f"{tune['index'] + 1} : {tune['written_name']} : {tune['value']:.3f}")
         update_image(tune)
 
-    for tune_index, (tune_name, tune) in enumerate(tunes.items()):
-        tune['index'] = tune_index
+    for (tune_name, tune_idx), tune in tunes.items():
         layout = QtWidgets.QHBoxLayout()
         label = QtWidgets.QLabel(f"")
         slider = QtWidgets.QSlider(QtCore.Qt.Orientation.Horizontal)

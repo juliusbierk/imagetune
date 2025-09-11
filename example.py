@@ -15,6 +15,7 @@ def gamma(im, gamma):
 
 
 def preprocess(im):
+    im = tune(gaussian, min=0.0, max=15.0)(im, 0.0)
     im = gamma(im, 1.0)
     im = tune(gaussian, min=0.0, max=5.0)(im, 0.0)
     im = threshold(im, 0.5)

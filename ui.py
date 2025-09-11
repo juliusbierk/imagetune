@@ -16,12 +16,21 @@ def _to_slider(val, min, max):
 def make_ui(pipeline, im, tunes):
     app = QtWidgets.QApplication([])
 
-    fig = fpl.Figure(shape=(1, 2))
-    ax0, ax1 = fig[0, 0], fig[0, 1]
-    orig = ax0.add_image(im)
-    bin_artist = ax1.add_image((im > 0.5).astype(np.float32))
-    ax0.title = "original"
-    ax1.title = "thresholded"
+    intermediate_plot = len(tunes) > 1
+
+    fig = fpl.Figure(shape=(1, 3 if intermediate_plot else 2))
+    if intermediate_plot:
+        ax_orig, ax_intermediate, ax_final = fig[0, 0], fig[0, 1], fig[0, 2]
+        ax_intermediate.title = "intermediate"
+        bin_intermediate = ax_intermediate.add_image(im)
+    else:
+        ax_orig, ax_intermediate, ax_final = fig[0, 0], None, fig[0, 1]
+
+    bin_orig = ax_orig.add_image(im)
+    bin_final = ax_final.add_image(im)
+
+    ax_orig.title = "original"
+    ax_final.title = "final"
 
     canvas = fig.show()
 
@@ -29,16 +38,20 @@ def make_ui(pipeline, im, tunes):
     lay = QtWidgets.QVBoxLayout(w)
     lay.addWidget(canvas)
 
-    def update_image():
+    def update_image(tune):
         r_im = pipeline(im)
-        bin_artist.data = r_im.astype(np.float32)
+        bin_final.data = r_im.astype(np.float32)
+        if intermediate_plot:
+            bin_intermediate.data = tune['result'].astype(np.float32)
+            ax_intermediate.title = f'{tune['index'] + 1} : {tune['name']}'
 
     def update(v, tune, label):
         tune['value'] = _from_slider(v, tune['min'], tune['max'])
-        label.setText(f"{tune['name']} : {tune['value']:.3f}")
-        update_image()
+        label.setText(f"{tune['index'] + 1} : {tune['name']} : {tune['value']:.3f}")
+        update_image(tune)
 
-    for tune_name, tune in tunes.items():
+    for tune_index, (tune_name, tune) in enumerate(tunes.items()):
+        tune['index'] = tune_index
         layout = QtWidgets.QHBoxLayout()
         label = QtWidgets.QLabel(f"")
         slider = QtWidgets.QSlider(QtCore.Qt.Orientation.Horizontal)

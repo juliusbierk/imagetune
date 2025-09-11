@@ -53,15 +53,7 @@ jobs:
           pip install -e .
         shell: bash
 
-      # Run tests; use xvfb on Linux to provide a virtual display
-      - name: Run tests (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          xvfb-run -a pytest -q
-        shell: bash
-
       - name: Run tests (macOS/Windows)
-        if: runner.os != 'Linux'
         run: |
           pytest -q
         shell: bash

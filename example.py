@@ -1,35 +1,21 @@
 from imagetune import tune, tuneui
 from skimage import data
-from skimage.filters import gaussian
+from skimage.filters import gaussian, unsharp_mask
 
 @tune(min=0, max=1.0)
 def threshold(im, t1):
     return im > t1
 
-@tune
-def gamma(im, gamma):
-    return im**gamma
-
-# @tune(argnums=(1, 2))
+@tune(argnums=(1, 2))
 def adjust(im, alpha, gamma):
-    return alpha * im**gamma
-
-@tune(argnames=('alpha', 'gamma'))
-def adjust2(im, alpha, gamma):
     return alpha * im**gamma
 
 
 def preprocess(im):
-    im = tune(adjust, argnums=(1, 2))(im, alpha=0.5, gamma=1.0)
-    im = tune(adjust, argnames='gamma')(im, 0.5, gamma=1.0)
-
-    #
-    # im = tune(gaussian, min=0.0, max=15.0)(im, 0.0)
-    # im = gamma(im, 1.0)
-    # im = tune(gaussian, min=0.0, max=5.0)(im, 0.0)
-    # im = adjust2(im, 0.5, 1.0)
-    # im = adjust2(im, alpha=0.5, gamma=1.0)
-    # im = threshold(im, 0.5)
+    im = adjust(im, 1.0, 1.0)
+    im = tune(gaussian)(im, 1.0)
+    im = tune(unsharp_mask, argnames='amount')(im, radius=2.0, amount=1.0)
+    im = threshold(im, 0.5)
     return im
 
 

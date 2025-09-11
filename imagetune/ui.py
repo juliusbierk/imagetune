@@ -41,7 +41,7 @@ def _build_ui_widget(pipeline, im, tunes):
         bin_final.data = r_im.astype(np.float32)
         if intermediate_plot:
             bin_intermediate.data = tune['result'].astype(np.float32)
-            ax_intermediate.title = f'{tune['index'] + 1} : {tune['written_name']}'
+            ax_intermediate.title = f"{tune['index'] + 1} : {tune['written_name']}"
 
     def update(v, tune, label, arg_index):
         use_argnames = tune['argnames'] is not None
@@ -77,7 +77,7 @@ def _build_ui_widget(pipeline, im, tunes):
                 tune['min'] = 0.1 * value
 
             if tune['max'] is None:
-                tune['max'] = 10 * value
+                tune['max'] = 1 if abs(value) < 1e-5 else 10 * value
 
             slider.setRange(0, 1000)
             slider.setValue(_to_slider(value, tune['min'], tune['max']))

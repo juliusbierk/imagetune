@@ -1,19 +1,24 @@
-def _param_list_excl_im(argspec):
+def _param_list_excl_im(argspec, argnum):
     a = list(argspec.args or [])
     if a and a[0] == "im":
         a = a[1:]
+
+    if argnum is not None and not (len(a) > argnum):
+        a = [f'arg{i}' for i in range(1, argnum + 1)]
+
     return a
 
 
 def resolve_argname(argspec, argnum=None, argname=None):
-    params = _param_list_excl_im(argspec)
+    params = _param_list_excl_im(argspec, argnum)
     if (argnum is None) == (argname is None):
         raise ValueError("Provide exactly one of argnum or argname")
     return argname if argname is not None else params[argnum - 1]
 
 
 def find_in_args_or_kwargs(argspec, args, kwargs, argnum=None, argname=None):
-    params = _param_list_excl_im(argspec)
+    params = _param_list_excl_im(argspec, argnum)
+
     if (argnum is None) == (argname is None):
         raise ValueError("Provide exactly one of argnum or argname")
 
@@ -33,7 +38,7 @@ def find_in_args_or_kwargs(argspec, args, kwargs, argnum=None, argname=None):
 
 
 def replace_in_args_or_kwargs(argspec, args, kwargs, new_value, argnum=None, argname=None):
-    params = _param_list_excl_im(argspec)
+    params = _param_list_excl_im(argspec, argnum)
     if (argnum is None) == (argname is None):
         raise ValueError("Provide exactly one of argnum or argname")
 

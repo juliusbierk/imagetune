@@ -53,7 +53,7 @@ im = data.coins()
 
 This launches a small window in which the parameters are tunable live:
 
-![ImageTune](.github/imgs/example1.png)
+![ImageTune](https://github.com/juliusbierk/imagetune/blob/main/.github/imgs/example1.png)
 
 You can also decorate your functions instead
 

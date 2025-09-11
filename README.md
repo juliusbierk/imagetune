@@ -28,10 +28,10 @@ result = preprocessing(im)
 The script depends on parameters, `sigma=10` for Gaussian filtering and `thres_val=0.1` for the thresholding.
 In order to tune these live, simply wrap those functions in `tune`:
 
-```python
+```diff
 from skimage.filters import gaussian
 from skimage import data
-<b>from imagetune import tune, tuneui</b>
++from imagetune import tune, tuneui
 
 
 def threshold(im, thres_val):
@@ -39,14 +39,14 @@ def threshold(im, thres_val):
 
 
 def preprocessing(im):
-    bg = <b>tune</b>(gaussian)(im, 10)
++    bg = tune(gaussian)(im, 10)
     fg = im - bg
-    segmented = <b>tune</b>(threshold)(fg, 0.1)
++    segmented = tune(threshold)(fg, 0.1)
     return segmented
 
 
 im = data.coins()
-<b>tuneui(preprocessing, im)</b>
++tuneui(preprocessing, im)
 ```
 
 This launches a small window in which the parameters are tunable live:
@@ -60,3 +60,13 @@ You can also decorate your functions instead
 def threshold(im, thres_val):
     return im > thres_val
 ```
+
+
+## Installation
+
+Install directly with `pip`:
+
+```bash
+pip install https://github.com/juliusbierk/imagetune/archive/refs/heads/main.zip
+```
+

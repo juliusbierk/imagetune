@@ -77,7 +77,7 @@ Only when you run `tuneui(preprocessing, im)` does it behave differently.
 Install directly with `pip`:
 
 ```bash
-pip install https://github.com/juliusbierk/imagetune/archive/refs/heads/main.zip
+pip install imagetune
 ```
 
 ## Function requirements

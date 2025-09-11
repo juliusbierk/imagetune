@@ -13,12 +13,26 @@ def threshold(im, t1):
 def gamma(im, gamma):
     return im**gamma
 
+@tune(argnums=2)
+def adjust(im, alpha, gamma):
+    return alpha * im**gamma
+
+@tune(argnames='gamma')
+def adjust2(im, alpha, gamma):
+    return alpha * im**gamma
+
 
 def preprocess(im):
-    im = tune(gaussian, min=0.0, max=15.0)(im, 0.0)
-    im = gamma(im, 1.0)
-    im = tune(gaussian, min=0.0, max=5.0)(im, 0.0)
-    im = threshold(im, 0.5)
+    im = adjust2(im, alpha=0.5, gamma=1.0)
+    im = adjust2(im, 0.5, 1.0)
+
+    #
+    # im = tune(gaussian, min=0.0, max=15.0)(im, 0.0)
+    # im = gamma(im, 1.0)
+    # im = tune(gaussian, min=0.0, max=5.0)(im, 0.0)
+    # im = adjust2(im, 0.5, 1.0)
+    # im = adjust2(im, alpha=0.5, gamma=1.0)
+    # im = threshold(im, 0.5)
     return im
 
 

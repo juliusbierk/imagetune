@@ -2,42 +2,53 @@ import numpy as np
 from functools import wraps
 from ui import make_ui
 from collections import OrderedDict
+import inspect
 
 
 _TUNES = OrderedDict()
 _INFO = {'INDEX' : 0}
 
 
-def add_written_names(d):
-    counts = {}
+def tune(func=None, min=None, max=None, name=None, argnums=None, argnames=None):
+    if argnames is not None:
+        assert argnums is None, "Only one of (argnums, argnames) can be specified."
 
-    for v in d.values():
-        counts[v["name"]] = counts.get(v["name"], 0) + 1
-    seen = {}
+    if argnums is None and argnames is None:
+        argnums = (1, )
 
-    for v in d.values():
-        n = v["name"]
-        seen[n] = seen.get(n, 0) + 1
-        v["written_name"] = f"{n} {seen[n]}" if counts[n] > 1 else n
+    if argnums is not None:
+        if isinstance(argnums, int):
+            argnums = (argnums,)
 
-    return d
+        assert isinstance(argnums, tuple), "`argnums` must be a tuple of integers"
+        assert isinstance(argnums[0], int), "`argnums` must be a tuple of integers"
+        assert all(x >= 1 for x in argnums), "`argnums` must be larger than zero (first argument should be image)"
 
-def tune(func=None, min=None, max=None, name=None):
+    if argnames is not None:
+        if isinstance(argnames, str):
+            argnames = (argnames,)
+
+        assert isinstance(argnames, tuple), "`argnames` must be a tuple of integers"
+        assert isinstance(argnames[0], str), "`argnames` must be a tuple of strings"
+
+
     def decorator(f):
         @wraps(f)
-        def wrapper(im, val):
+        def wrapper(im, *args, **kwargs):
             idx = _INFO["INDEX"]
             name_ = name or f.__name__
 
             if (name_, idx) not in _TUNES:
                 # Fill on first call (ensures order is correct):
-                _TUNES[(name_, idx)] = {"name": name_, "func": wrapper, "min": min, "max": max, "value": val, "result": None, "index": idx}
+                _TUNES[(name_, idx)] = {"name": name_, "func": wrapper, "min": min, "max": max,
+                                        "args": list(args), "kwargs": dict(kwargs), "result": None, "index": idx,
+                                        "argnums":argnums, "argnames": argnames, "argspec": inspect.getfullargspec(f)}
 
-            res = f(im, _TUNES[(name_, idx)]['value'])
+            res = f(im, *_TUNES[(name_, idx)]['args'], **_TUNES[(name_, idx)]['kwargs'])
             _TUNES[(name_, idx)]['result'] = np.array(res)
             _INFO['INDEX'] += 1
 
-            return res    
+            return res
 
         return wrapper
 
@@ -57,5 +68,4 @@ def tuneui(pipeline, im):
         return pipeline(im)
 
     wrappred(im)
-    add_written_names(_TUNES)
     make_ui(wrappred, im, _TUNES)

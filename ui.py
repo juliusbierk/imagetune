@@ -1,19 +1,36 @@
 import numpy as np
-from skimage import data, color, exposure, filters
 import fastplotlib as fpl
 from PySide6 import QtWidgets, QtCore
 from functools import partial
+from helper_functions import find_in_args_or_kwargs, replace_in_args_or_kwargs, resolve_argname
 
 
 def _from_slider(val, min, max):
-    return min + val / 100.0 * (max - min)
+    return min + val / 1000.0 * (max - min)
 
 
 def _to_slider(val, min, max):
-    return int(100 * (val - min) / (max - min))
+    return int(1000.0 * (val - min) / (max - min))
 
 
-def make_ui(pipeline, im, tunes):
+def add_written_names(d):
+    counts = {}
+
+    for v in d.values():
+        counts[v["name"]] = counts.get(v["name"], 0) + 1
+    seen = {}
+
+    for v in d.values():
+        n = v["name"]
+        seen[n] = seen.get(n, 0) + 1
+        v["written_name"] = f"{n}_{seen[n]}" if counts[n] > 1 else n
+
+    return d
+
+
+def make_ui(pipeline, im, tunes, width=1200, height=600):
+    add_written_names(tunes)
+
     app = QtWidgets.QApplication([])
 
     intermediate_plot = len(tunes) > 1
@@ -45,34 +62,53 @@ def make_ui(pipeline, im, tunes):
             bin_intermediate.data = tune['result'].astype(np.float32)
             ax_intermediate.title = f'{tune['index'] + 1} : {tune['written_name']}'
 
-    def update(v, tune, label):
-        tune['value'] = _from_slider(v, tune['min'], tune['max'])
-        label.setText(f"{tune['index'] + 1} : {tune['written_name']} : {tune['value']:.3f}")
+    def update(v, tune, label, arg_index):
+        use_argnames = tune['argnames'] is not None
+        argnum = tune['argnums'][arg_index] if not use_argnames else None
+        argname = tune['argnames'][arg_index] if use_argnames else None
+
+        v = _from_slider(v, tune['min'], tune['max'])
+        replace_in_args_or_kwargs(tune['argspec'], tune['args'], tune['kwargs'], v,
+                                  argnum=argnum, argname=argname)
+
+        argname = resolve_argname(tune['argspec'], argnum=argnum, argname=argname)
+        label.setText(f"{tune['index'] + 1} : {tune['written_name']} ({argname}): {v:.3f}")
+
         update_image(tune)
 
-    for (tune_name, tune_idx), tune in tunes.items():
-        layout = QtWidgets.QHBoxLayout()
-        label = QtWidgets.QLabel(f"")
-        slider = QtWidgets.QSlider(QtCore.Qt.Orientation.Horizontal)
+    for tune in tunes.values():
+        use_argnames = tune['argnames'] is not None
+        n_tunable = len(tune['argnames']) if use_argnames else len(tune['argnums'])
 
-        if tune['min'] is None:
-            tune['min'] = 0.1 * tune['value']
+        for arg_index in range(n_tunable):
+            layout = QtWidgets.QHBoxLayout()
+            label = QtWidgets.QLabel("")
+            slider = QtWidgets.QSlider(QtCore.Qt.Orientation.Horizontal)
 
-        if tune['max'] is None:
-            tune['max'] = 10 * tune['value']
+            if use_argnames:
+                value = find_in_args_or_kwargs(tune['argspec'], tune['args'], tune['kwargs'],
+                                       argname=tune['argnames'][arg_index])
+            else:
+                value = find_in_args_or_kwargs(tune['argspec'], tune['args'], tune['kwargs'],
+                                       argnum=tune['argnums'][arg_index])
 
-        slider.setRange(0, 100)
-        slider.setValue(_to_slider(tune['value'], tune['min'], tune['max']))
-        layout.addWidget(label)
-        layout.addWidget(slider)
-        lay.addLayout(layout)
+            if tune['min'] is None:
+                tune['min'] = 0.1 * value
 
-        slider.valueChanged.connect(partial(update, tune=tune, label=label))
-        v = _to_slider(tune['value'], tune['min'], tune['max'])
-        slider.sliderPressed.connect(partial(update, v=v, tune=tune, label=label))
-        update(v, tune, label)
+            if tune['max'] is None:
+                tune['max'] = 10 * value
 
+            slider.setRange(0, 1000)
+            slider.setValue(_to_slider(value, tune['min'], tune['max']))
+            layout.addWidget(label)
+            layout.addWidget(slider)
+            lay.addLayout(layout)
 
-    w.resize(1200, 600)
+            slider.valueChanged.connect(partial(update, tune=tune, label=label, arg_index=arg_index))
+            v = _to_slider(value, tune['min'], tune['max'])
+            slider.sliderPressed.connect(partial(update, v=v, tune=tune, label=label, arg_index=arg_index))
+            update(v=v, tune=tune, label=label, arg_index=arg_index)
+
+    w.resize(width, height)
     w.show()
     app.exec()

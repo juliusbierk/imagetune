@@ -2,7 +2,7 @@ import numpy as np
 import fastplotlib as fpl
 from PySide6 import QtWidgets, QtCore
 from functools import partial
-from helper_functions import find_in_args_or_kwargs, replace_in_args_or_kwargs, resolve_argname
+from helper_functions import find_in_args_or_kwargs, replace_in_args_or_kwargs, resolve_argname, add_written_names
 
 
 def _from_slider(val, min, max):
@@ -11,21 +11,6 @@ def _from_slider(val, min, max):
 
 def _to_slider(val, min, max):
     return int(1000.0 * (val - min) / (max - min))
-
-
-def add_written_names(d):
-    counts = {}
-
-    for v in d.values():
-        counts[v["name"]] = counts.get(v["name"], 0) + 1
-    seen = {}
-
-    for v in d.values():
-        n = v["name"]
-        seen[n] = seen.get(n, 0) + 1
-        v["written_name"] = f"{n}_{seen[n]}" if counts[n] > 1 else n
-
-    return d
 
 
 def make_ui(pipeline, im, tunes, width=1200, height=600):

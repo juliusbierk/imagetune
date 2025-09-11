@@ -61,6 +61,14 @@ def threshold(im, thres_val):
     return im > thres_val
 ```
 
+Note that the function still works as normal:
+
+```python
+output = preprocessing(im)
+```
+
+Only when you run `tuneui(preprocessing, im)` does it behave differently.
+
 
 ## Installation
 
@@ -70,3 +78,41 @@ Install directly with `pip`:
 pip install https://github.com/juliusbierk/imagetune/archive/refs/heads/main.zip
 ```
 
+## Function requirements
+
+All tunable functions are asssumed to take an image as its input and return an image as its output.
+
+## Choosing parameters
+
+Given a function:
+
+```python
+def adjust(im, alpha, gamma):
+    return alpha * im**gamma
+```
+
+The decorator `tune` will per standard assume you wish to tune the first parameter (`alpha`).
+You can change this by specifying another `argname`:
+
+```python
+tune(adjust, argnames='gamma')
+```
+
+or `argnum`:
+
+```python
+tune(adjust, argnums=2)
+```
+
+The behavior of the above is identical.
+You can also tune both parameters, by either
+
+```python
+tune(adjust, argnames=('alpha', 'gamma'))
+```
+
+or
+
+```python
+tune(adjust, argnums=(0, 1))
+```

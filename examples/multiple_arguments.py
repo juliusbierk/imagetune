@@ -2,7 +2,7 @@ from imagetune import tune, tuneui
 from skimage import data
 from skimage.filters import gaussian, unsharp_mask
 
-@tune(min=0, max=1.0)
+@tune
 def threshold(im, t1):
     return im > t1
 

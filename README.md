@@ -116,3 +116,15 @@ or
 ```python
 tune(adjust, argnums=(1, 2))
 ```
+
+## Misc
+
+To overwrite function names in the UI, simply pass along a name:
+```python
+bg = tune(gaussian, name='blur')(im, 10)
+```
+
+You can also choose a `min`, `max` of the parameter bar:
+```python
+bg = tune(gaussian, min=0, max=300)(im, 10)
+```

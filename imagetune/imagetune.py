@@ -3,7 +3,6 @@ from functools import wraps
 from collections import OrderedDict
 import inspect
 
-
 from .ui import make_ui, _build_ui_widget
 
 _TUNES = OrderedDict()

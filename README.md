@@ -92,13 +92,13 @@ def adjust(im, alpha, gamma):
 ```
 
 The decorator `tune` will per standard assume you wish to tune the first parameter (`alpha`).
-You can change this by specifying another `argname`:
+You can change this by specifying `argnames`:
 
 ```python
 tune(adjust, argnames='gamma')
 ```
 
-or `argnum`:
+or `argnums`:
 
 ```python
 tune(adjust, argnums=2)
@@ -114,5 +114,5 @@ tune(adjust, argnames=('alpha', 'gamma'))
 or
 
 ```python
-tune(adjust, argnums=(0, 1))
+tune(adjust, argnums=(1, 2))
 ```

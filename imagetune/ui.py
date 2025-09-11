@@ -2,7 +2,8 @@ import numpy as np
 import fastplotlib as fpl
 from PySide6 import QtWidgets, QtCore
 from functools import partial
-from helper_functions import find_in_args_or_kwargs, replace_in_args_or_kwargs, resolve_argname, add_written_names
+
+from .helper_functions import find_in_args_or_kwargs, replace_in_args_or_kwargs, resolve_argname, add_written_names
 
 
 def _from_slider(val, min, max):
@@ -13,10 +14,8 @@ def _to_slider(val, min, max):
     return int(1000.0 * (val - min) / (max - min))
 
 
-def make_ui(pipeline, im, tunes, width=1200, height=600):
+def _build_ui_widget(pipeline, im, tunes):
     add_written_names(tunes)
-
-    app = QtWidgets.QApplication([])
 
     intermediate_plot = len(tunes) > 1
 
@@ -30,12 +29,9 @@ def make_ui(pipeline, im, tunes, width=1200, height=600):
 
     bin_orig = ax_orig.add_image(im)
     bin_final = ax_final.add_image(im)
-
     ax_orig.title = "original"
     ax_final.title = "final"
-
     canvas = fig.show()
-
     w = QtWidgets.QWidget()
     lay = QtWidgets.QVBoxLayout(w)
     lay.addWidget(canvas)
@@ -72,10 +68,10 @@ def make_ui(pipeline, im, tunes, width=1200, height=600):
 
             if use_argnames:
                 value = find_in_args_or_kwargs(tune['argspec'], tune['args'], tune['kwargs'],
-                                       argname=tune['argnames'][arg_index])
+                                               argname=tune['argnames'][arg_index])
             else:
                 value = find_in_args_or_kwargs(tune['argspec'], tune['args'], tune['kwargs'],
-                                       argnum=tune['argnums'][arg_index])
+                                               argnum=tune['argnums'][arg_index])
 
             if tune['min'] is None:
                 tune['min'] = 0.1 * value
@@ -94,6 +90,12 @@ def make_ui(pipeline, im, tunes, width=1200, height=600):
             slider.sliderPressed.connect(partial(update, v=v, tune=tune, label=label, arg_index=arg_index))
             update(v=v, tune=tune, label=label, arg_index=arg_index)
 
+    return w
+
+def make_ui(pipeline, im, tunes, width=1200, height=600):
+    app = QtWidgets.QApplication([])
+    w = _build_ui_widget(pipeline, im, tunes)
     w.resize(width, height)
     w.show()
     app.exec()
+

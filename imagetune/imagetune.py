@@ -1,9 +1,10 @@
 import numpy as np 
 from functools import wraps
-from ui import make_ui
 from collections import OrderedDict
 import inspect
 
+
+from .ui import make_ui, _build_ui_widget
 
 _TUNES = OrderedDict()
 _INFO = {'INDEX' : 0}
@@ -69,3 +70,13 @@ def tuneui(pipeline, im):
 
     wrappred(im)
     make_ui(wrappred, im, _TUNES)
+
+
+def _tune_ui_widget(pipeline, im):
+    def wrappred(im):
+        _INFO['INDEX'] = 0
+        return pipeline(im)
+
+    wrappred(im)
+    return _build_ui_widget(wrappred, im, _TUNES)
+

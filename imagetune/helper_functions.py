@@ -3,7 +3,7 @@ def _param_list_excl_im(argspec, argnum):
     if a and a[0] == "im":
         a = a[1:]
 
-    if argnum is not None and not (len(a) > argnum):
+    if argnum is not None and not (len(a) >= argnum):
         a = [f'arg{i}' for i in range(1, argnum + 1)]
 
     return a

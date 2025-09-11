@@ -11,7 +11,7 @@ license = "GPL-3.0-or-later"
 authors = [
     { name = "Julius B. Kirkegaard", email = "juki@di.ku.dk" }
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 
 dependencies = [
     "numpy",

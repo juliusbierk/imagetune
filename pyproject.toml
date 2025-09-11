@@ -17,6 +17,7 @@ dependencies = [
     "numpy",
     "fastplotlib",
     "PyQt6",
+    "PySide6",
 ]
 
 [project.urls]

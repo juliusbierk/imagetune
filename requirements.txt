@@ -1,6 +1,7 @@
 numpy
 fastplotlib
 PyQt6
+PySide6
 
 # for testing:
 pytest

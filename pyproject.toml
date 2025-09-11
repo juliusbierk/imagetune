@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "imagetune"
+version = "0.1.0"
+description = "Live tuning of image processing algorithms"
+readme = "README.md"
+license = { text = "GPL" }
+authors = [
+    { name = "Julius B. Kirkegaard", email = "juki@di.ku.dk" }
+]
+requires-python = ">=3.9"
+
+dependencies = [
+    "numpy",
+    "fastplotlib",
+    "PyQt6",
+]
+
+[project.urls]
+Homepage = "https://github.com/juliusbierk/imagetune"
+Repository = "https://github.com/juliusbierk/imagetune"
+Issues = "https://github.com/juliusbierk/imagetune/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}

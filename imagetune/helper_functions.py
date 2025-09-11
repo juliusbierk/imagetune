@@ -1,6 +1,6 @@
 def _param_list_excl_im(argspec, argnum):
     a = list(argspec.args or [])
-    if a and a[0] == "im":
+    if a:
         a = a[1:]
 
     if argnum is not None and not (len(a) >= argnum):

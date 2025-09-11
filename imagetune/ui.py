@@ -2,6 +2,7 @@ import numpy as np
 import fastplotlib as fpl
 from PySide6 import QtWidgets, QtCore
 from functools import partial
+from skimage.util import img_as_float
 
 from .helper_functions import find_in_args_or_kwargs, replace_in_args_or_kwargs, resolve_argname, add_written_names
 
@@ -15,17 +16,23 @@ def _to_slider(val, min, max):
 
 
 def _build_ui_widget(pipeline, im, tunes):
+    im = img_as_float(im)
+
     add_written_names(tunes)
 
     intermediate_plot = len(tunes) > 1
 
-    fig = fpl.Figure(shape=(1, 3 if intermediate_plot else 2))
+    fig = fpl.Figure(shape=(1, 3 if intermediate_plot else 2), controller_ids="sync")
     if intermediate_plot:
         ax_orig, ax_intermediate, ax_final = fig[0, 0], fig[0, 1], fig[0, 2]
         ax_intermediate.title = "intermediate"
         bin_intermediate = ax_intermediate.add_image(im)
     else:
         ax_orig, ax_intermediate, ax_final = fig[0, 0], None, fig[0, 1]
+
+    for ax in (ax_orig, ax_intermediate, ax_final):
+        if ax is not None:
+            ax.axes.visible = False
 
     bin_orig = ax_orig.add_image(im)
     bin_final = ax_final.add_image(im)
@@ -38,9 +45,9 @@ def _build_ui_widget(pipeline, im, tunes):
 
     def update_image(tune):
         r_im = pipeline(im)
-        bin_final.data = r_im.astype(np.float32)
+        bin_final.data = img_as_float(r_im)
         if intermediate_plot:
-            bin_intermediate.data = tune['result'].astype(np.float32)
+            bin_intermediate.data = img_as_float(tune['result'])
             ax_intermediate.title = f"{tune['index'] + 1} : {tune['written_name']}"
 
     def update(v, tune, label, arg_index):
@@ -92,9 +99,10 @@ def _build_ui_widget(pipeline, im, tunes):
 
     return w
 
-def make_ui(pipeline, im, tunes, width=1200, height=600):
+def make_ui(pipeline, im, tunes, width=1200, height=500):
     app = QtWidgets.QApplication([])
     w = _build_ui_widget(pipeline, im, tunes)
+    w.setWindowTitle("ImageTune")
     w.resize(width, height)
     w.show()
     app.exec()

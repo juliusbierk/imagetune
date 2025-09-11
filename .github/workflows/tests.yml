@@ -20,6 +20,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Ubuntu-only: install EGL/OpenGL + Xvfb for headless rendering
+      - name: Install system libs (Linux only)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libegl1 \
+            libgl1 \
+            libopengl0 \
+            libglu1-mesa \
+            libxrandr2 \
+            libxinerama1 \
+            libxcursor1 \
+            libxi6 \
+            xvfb
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -32,7 +48,20 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         shell: bash
 
-      - name: Run tests
+      - name: Install package
+        run: |
+          pip install -e .
+        shell: bash
+
+      # Run tests; use xvfb on Linux to provide a virtual display
+      - name: Run tests (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          xvfb-run -a pytest -q
+        shell: bash
+
+      - name: Run tests (macOS/Windows)
+        if: runner.os != 'Linux'
         run: |
           pytest -q
         shell: bash

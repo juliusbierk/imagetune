@@ -7,7 +7,7 @@ name = "imagetune"
 version = "0.1.0"
 description = "Live tuning of image processing algorithms"
 readme = "README.md"
-license = { text = "GPL" }
+license = "GPL"
 authors = [
     { name = "Julius B. Kirkegaard", email = "juki@di.ku.dk" }
 ]

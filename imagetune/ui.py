@@ -20,7 +20,7 @@ def _build_ui_widget(pipeline, im, tunes):
 
     add_written_names(tunes)
 
-    intermediate_plot = len(tunes) > 1
+    intermediate_plot = True  # for now always do intermediate
 
     fig = fpl.Figure(shape=(1, 3 if intermediate_plot else 2), controller_ids="sync")
     if intermediate_plot:

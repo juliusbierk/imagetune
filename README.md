@@ -1,7 +1,7 @@
 # IMAGETUNE
 
 `imagetune` is a simple GUI to interactively tune image-processing parameters.
-It utilizes the hardware accellerated speed of [fastplotlib](https://github.com/fastplotlib/fastplotlib) to provide visual feedback that is not limited by plotting.
+It utilizes the hardware accellerated speed of [fastplotlib](https://github.com/fastplotlib/fastplotlib) to provide visual feedback that is not slowed down by plotting.
 
 `imagetune` is simple to use requiring only minimal changes to your code. Simply wrap the functions you wish to tune the parameters of with `tune` and launch `tuneui`.
 
@@ -30,8 +30,8 @@ im = data.coins()
 result = preprocessing(im)
 ```
 
-The script depends on parameters, `sigma=10` for Gaussian filtering and `thres_val=0.1` for the thresholding.
-In order to tune these live, simply wrap those functions in `tune`:
+The script depends on parameters `sigma=10` for Gaussian filtering and `thres_val=0.1` for the thresholding.
+In order to tune these live, simply wrap those functions in `tune` and launch `tuneui`:
 
 ```diff
 from skimage.filters import gaussian
@@ -56,7 +56,7 @@ im = data.coins()
 +tuneui(preprocessing, im)
 ```
 
-This launches a small window in which the parameters are tunable live:
+This launches a window in which the parameters are tunable interactively:
 
 ![ImageTune](https://github.com/juliusbierk/imagetune/blob/main/.github/imgs/example1.png)
 
@@ -87,7 +87,7 @@ pip install imagetune
 
 ## Function requirements
 
-All tunable functions are asssumed to take an image as its input and return an image as its output.
+All tunable functions are asssumed to take an image as its first input and return an image as its output.
 
 ## Choosing parameters
 

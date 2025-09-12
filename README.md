@@ -1,9 +1,11 @@
 # IMAGETUNE
 
 `imagetune` is a simple GUI to interactively tune image-processing parameters.
-It utilizes the hardware accellerated speed of fastplotlib to provide visual feedback that is not limited by plotting.
+It utilizes the hardware accellerated speed of ![fastplotlib](https://github.com/fastplotlib/fastplotlib) to provide visual feedback that is not limited by plotting.
 
 `imagetune` is simple to use requiring only minimal changes to your code. Simply wrap the functions you wish to tune the parameters of with `tune` and launch `tuneui`.
+
+![ImageTune](https://github.com/juliusbierk/imagetune/blob/main/.github/imgs/code.png)
 
 ### How to use
 Here is a simple script to make a binary version of an image:

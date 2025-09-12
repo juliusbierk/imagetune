@@ -2,9 +2,8 @@ numpy
 fastplotlib
 PyQt6
 PySide6
+scikit-image
 
 # for testing:
 pytest
 pytest-qt
-scikit-image
-

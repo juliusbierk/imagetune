@@ -18,6 +18,7 @@ dependencies = [
     "fastplotlib",
     "PyQt6",
     "PySide6",
+    "scikit-image",
 ]
 
 [project.urls]

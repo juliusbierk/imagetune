@@ -7,6 +7,9 @@ It utilizes the hardware accellerated speed of [fastplotlib](https://github.com/
 
 ![ImageTune](https://github.com/juliusbierk/imagetune/blob/main/.github/imgs/code.png)
 
+### Try it
+Run [example](https://github.com/juliusbierk/imagetune/blob/main/examples/simple_segmentation.py).
+
 ### How to use
 Here is a simple script to make a binary version of an image:
 

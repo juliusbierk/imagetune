@@ -7,6 +7,14 @@ It utilizes the hardware accellerated speed of [fastplotlib](https://github.com/
 
 ![ImageTune](https://github.com/juliusbierk/imagetune/blob/main/.github/imgs/code.png)
 
+## Installation
+
+Install directly with `pip`:
+
+```bash
+pip install imagetune
+```
+
 ### Try it
 Run [example](https://github.com/juliusbierk/imagetune/blob/main/examples/simple_segmentation.py).
 
@@ -78,15 +86,6 @@ output = preprocessing(im)
 ```
 
 Only when you run `tuneui(preprocessing, im)` does it behave differently.
-
-
-## Installation
-
-Install directly with `pip`:
-
-```bash
-pip install imagetune
-```
 
 ## Function requirements
 
